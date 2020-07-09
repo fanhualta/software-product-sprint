@@ -4,6 +4,26 @@
   width: 650px;
 }
 
-#greeting-container {
+#container {
   margin-top: 20px;
 }
+
+p, li{
+    word-break: keep-all;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align:justify;
+    text-justify:inter-ideograph;
+}
+
+.title{
+    float: left;
+    width: 60%;
+}
+
+.photo{
+    float:right;
+    width:40%;
+}
+
+
