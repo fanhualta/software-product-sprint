@@ -21,9 +21,15 @@ p, li{
     width: 60%;
 }
 
-.photo{
+.logo{
     float:right;
     width:40%;
 }
+
+.photo{
+    float:left;
+    width:25%;
+}
+
 
 
