@@ -14,7 +14,10 @@
 
 package com.google.sps.servlets;
 
+import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +27,28 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private List<String> comments;
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("Hello Tianan Li!");
+    comments = new ArrayList<>();
+    comments.add("comment1");
+    comments.add("comment2");
+    comments.add("comment3");
+
+    // Convert the server stats to JSON
+    String json = convertToJsonUsingGson(comments);
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
+  }
+
+  /**
+   * Converts a list of comments instance into a JSON string using the Gson library. Note: We first added
+   * the Gson library dependency to pom.xml.
+   */
+  private String convertToJsonUsingGson(List<String> comments) {
+    Gson gson = new Gson();
+    String json = gson.toJson(comments);
+    return json;
   }
 }
