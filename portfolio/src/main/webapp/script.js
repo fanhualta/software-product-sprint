@@ -26,3 +26,9 @@ function getRandomQuote() {
   const greetingContainer = document.getElementById('container');
   greetingContainer.innerText = greeting;
 }
+
+async function sayHi() {
+  const response = await fetch('/data');
+  const quote = await response.text();
+  document.getElementById('say-hi-container').innerText = quote;
+}
