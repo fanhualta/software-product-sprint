@@ -86,8 +86,8 @@ public class DataServlet extends HttpServlet {
     private final long timestamp;
 
     public Comment(String comment, long timestamp) {
-        this.comment = comment;
-        this.timestamp = timestamp;
+      this.comment = comment;
+      this.timestamp = timestamp;
     }
   }
 }
