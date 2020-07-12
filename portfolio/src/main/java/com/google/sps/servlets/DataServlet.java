@@ -15,6 +15,12 @@
 package com.google.sps.servlets;
 
 import com.google.gson.Gson;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +33,19 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private List<String> comments = new ArrayList<>();
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String comment = (String) entity.getProperty("comment");
+      comments.add(comment);
+    }
+
     // Convert the server stats to JSON
     String json = convertToJsonUsingGson(comments);
     response.setContentType("application/json;");
@@ -40,7 +55,14 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("comment");
-    comments.add(comment);
+    long timestamp = System.currentTimeMillis();
+
+    Entity taskEntity = new Entity("Comment");
+    taskEntity.setProperty("comment", comment);
+    taskEntity.setProperty("timestamp", timestamp);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(taskEntity);
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
@@ -56,4 +78,17 @@ public class DataServlet extends HttpServlet {
     String json = gson.toJson(comments);
     return json;
   }
+
+
+  private final class Comment {
+
+    private final String comment;
+    private final long timestamp;
+
+    public Comment(String comment, long timestamp) {
+        this.comment = comment;
+        this.timestamp = timestamp;
+    }
+  }
 }
+
