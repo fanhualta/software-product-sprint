@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script> 
   </head>
-  <body background="images/background.jpeg">
+  <body background="images/background.jpeg" onload="showComments()">
     <div id="content">
       <h1 style="text-align:center">This is Tianan Li's portfolio</h1>
       <hr>
@@ -50,12 +50,20 @@
       </div>
       <hr>
       <div>
-        <h2><strong> My Motto</strong></h2>
+        <h2><strong> My Motto </strong></h2>
         <p> Never Give Up! </p>
       </div>
       <div>
-        <h2><strong> Click <button onclick="seeComments()">here</button> to see comments </strong></h2>
-        <ul id="see-comments-container"></ul>
+        <h2><strong> All comments </strong></h2>
+        <ul id="show-comments-container"></ul>
+      </div>
+      <div>
+          <form action="/data" method="POST">
+            <h2><strong> Welcome to add your comment </strong></h2>
+            <input type="text" name="comment">
+            <br/><br/>
+            <input type="submit" />
+          </form>
       </div>
     </div>
   </body>

@@ -27,20 +27,25 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private List<String> comments;
+  private List<String> comments = new ArrayList<>();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    comments = new ArrayList<>();
-    comments.add("comment1");
-    comments.add("comment2");
-    comments.add("comment3");
-
     // Convert the server stats to JSON
     String json = convertToJsonUsingGson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comment = request.getParameter("comment");
+    comments.add(comment);
+
+    // Redirect back to the HTML page.
+    response.sendRedirect("/index.html");
+  }
+
 
   /**
    * Converts a list of comments instance into a JSON string using the Gson library. Note: We first added

@@ -27,17 +27,17 @@ function getRandomQuote() {
   greetingContainer.innerText = greeting;
 }
 
-function seeComments() {
+function showComments() {
     fetch('/data').then(response => response.json()).then((stats) => {
     // stats is an object, not a string, so we have to
     // reference its fields to create HTML content
 
-    const statsListElement = document.getElementById('see-comments-container');
+    const statsListElement = document.getElementById('show-comments-container');
     statsListElement.innerHTML = '';
 
-    for(var i = 0, len = stats.length; i < len; i++){
-        statsListElement.appendChild(createListElement(stats[i]));
-    }
+    stats.forEach((comment) => {
+        statsListElement.appendChild(createListElement(comment));
+        });
   });
 }
 
