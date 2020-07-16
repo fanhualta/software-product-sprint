@@ -39,6 +39,14 @@ function showComments() {
   });
 }
 
+function checkLogStatus() {
+  fetch('/status').then(response => response.text()).then((status) => {
+      
+    const statsListElement = document.getElementById('log-status');
+    statsListElement.innerHTML = status;
+  });
+}
+
 /** Creates an <li> element containing text. */
 function createListElement(text) {
   const liElement = document.createElement('li');
