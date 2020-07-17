@@ -48,38 +48,17 @@ public class StatusServlet extends HttpServlet {
       return;
     }
 
-    // If user has not set a nickname, redirect to nickname page
-    String nickname = getUserNickname(userService.getCurrentUser().getUserId());
-    if (nickname == null) {
-      response.sendRedirect("/nickname");
-      return;
-    }
-
     String urlToRedirectToAfterUserLogsOut = "/";
     String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
-    response.getWriter().println("<p>Hello " + nickname + "!</p>");
+    response.getWriter().println("<p>Hello " + userService.getCurrentUser().getEmail() + "!</p>");
     response.getWriter().println("<p>Log out <a href=\"" + logoutUrl + "\">here</a>.</p>");
-    response.getWriter().println("<p>Change your nickname <a href=\"/nickname\">here</a>.</p>");
     response.getWriter().println("<form action=\"/data\" method=\"POST\">");
     response.getWriter().println("<input type=\"text\" name=\"comment\">");
     response.getWriter().println("<br/><br/>");
     response.getWriter().println("<input type=\"submit\" />");
     response.getWriter().println("</form>");
 
-  }
-
-  /** Returns the nickname of the user with id, or null if the user has not set a nickname. */
-  private String getUserNickname(String id) {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query = new Query("UserInfo").setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
-    PreparedQuery results = datastore.prepare(query);
-    Entity entity = results.asSingleEntity();
-    if (entity == null) {
-      return null;
-    }
-    String nickname = (String) entity.getProperty("nickname");
-    return nickname;
   }
 
   @Override
@@ -96,29 +75,6 @@ public class StatusServlet extends HttpServlet {
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
-  }
-
-
-  /**
-   * Converts a list of comments instance into a JSON string using the Gson library. Note: We first added
-   * the Gson library dependency to pom.xml.
-   */
-  private String convertToJsonUsingGson(List<String> comments) {
-    Gson gson = new Gson();
-    String json = gson.toJson(comments);
-    return json;
-  }
-
-
-  private final class Comment {
-
-    private final String comment;
-    private final long timestamp;
-
-    public Comment(String comment, long timestamp) {
-      this.comment = comment;
-      this.timestamp = timestamp;
-    }
   }
 }
 

@@ -21,6 +21,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +42,12 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<String> comments = new ArrayList<>();
+    List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       String comment = (String) entity.getProperty("comment");
-      comments.add(comment);
+      String email = (String) entity.getProperty("email");
+      long timestamp = (long) entity.getProperty("timestamp");
+      comments.add(new Comment(comment, timestamp, email));
     }
 
     // Convert the server stats to JSON
@@ -57,9 +61,11 @@ public class DataServlet extends HttpServlet {
     String comment = request.getParameter("comment");
     long timestamp = System.currentTimeMillis();
 
+    UserService userService = UserServiceFactory.getUserService();
     Entity taskEntity = new Entity("Comment");
     taskEntity.setProperty("comment", comment);
     taskEntity.setProperty("timestamp", timestamp);
+    taskEntity.setProperty("email", userService.getCurrentUser().getEmail());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(taskEntity);
@@ -68,12 +74,11 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html");
   }
 
-
   /**
    * Converts a list of comments instance into a JSON string using the Gson library. Note: We first added
    * the Gson library dependency to pom.xml.
    */
-  private String convertToJsonUsingGson(List<String> comments) {
+  private String convertToJsonUsingGson(List<Comment> comments) {
     Gson gson = new Gson();
     String json = gson.toJson(comments);
     return json;
@@ -84,10 +89,20 @@ public class DataServlet extends HttpServlet {
 
     private final String comment;
     private final long timestamp;
+    private final String email;
 
-    public Comment(String comment, long timestamp) {
+    public Comment(String comment, long timestamp, String email) {
       this.comment = comment;
       this.timestamp = timestamp;
+      this.email = email;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getEmail() {
+        return email;
     }
   }
 }
