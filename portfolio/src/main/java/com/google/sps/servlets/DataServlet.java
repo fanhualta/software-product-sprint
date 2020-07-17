@@ -98,11 +98,11 @@ public class DataServlet extends HttpServlet {
     }
 
     public String getComment() {
-        return comment;
+      return comment;
     }
 
     public String getEmail() {
-        return email;
+      return email;
     }
   }
 }
