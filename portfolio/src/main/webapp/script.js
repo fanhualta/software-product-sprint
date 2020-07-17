@@ -41,9 +41,7 @@ function showComments() {
 
 function checkLogStatus() {
   fetch('/status').then(response => response.text()).then((status) => {
-      
-    const statsListElement = document.getElementById('log-status');
-    statsListElement.innerHTML = status;
+    document.getElementById('log-status').innerHTML = status;
   });
 }
 

@@ -39,7 +39,7 @@ public class NicknameServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     String userEmail = "";
     if (userService.isUserLoggedIn()) {
-       userEmail = userService.getCurrentUser().getEmail();
+      userEmail = userService.getCurrentUser().getEmail();
     }
     out.println("<p>Hello " + userEmail + "!</p>");
 
@@ -83,9 +83,7 @@ public class NicknameServlet extends HttpServlet {
    */
   private String getUserNickname(String id) {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query =
-        new Query("UserInfo")
-            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
+    Query query = new Query("UserInfo").setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
     PreparedQuery results = datastore.prepare(query);
     Entity entity = results.asSingleEntity();
     if (entity == null) {
