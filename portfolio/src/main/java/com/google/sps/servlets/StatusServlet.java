@@ -54,7 +54,7 @@ public class StatusServlet extends HttpServlet {
     response.getWriter().println("<p>Hello " + userService.getCurrentUser().getEmail() + "!</p>");
     response.getWriter().println("<p>Log out <a href=\"" + logoutUrl + "\">here</a>.</p>");
     response.getWriter().println("<form action=\"/data\" method=\"POST\">");
-    response.getWriter().println("<input type=\"text\" name=\"comment\">");
+    response.getWriter().println("<input type=\"text\" name=\"message\">");
     response.getWriter().println("<br/><br/>");
     response.getWriter().println("<input type=\"submit\" />");
     response.getWriter().println("</form>");

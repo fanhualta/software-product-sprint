@@ -44,10 +44,10 @@ public class DataServlet extends HttpServlet {
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
-      String comment = (String) entity.getProperty("comment");
+      String message = (String) entity.getProperty("message");
       String email = (String) entity.getProperty("email");
       long timestamp = (long) entity.getProperty("timestamp");
-      comments.add(new Comment(comment, timestamp, email));
+      comments.add(new Comment(message, timestamp, email));
     }
 
     // Convert the server stats to JSON
@@ -58,12 +58,12 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = request.getParameter("comment");
+    String message = request.getParameter("message");
     long timestamp = System.currentTimeMillis();
 
     UserService userService = UserServiceFactory.getUserService();
     Entity taskEntity = new Entity("Comment");
-    taskEntity.setProperty("comment", comment);
+    taskEntity.setProperty("message", message);
     taskEntity.setProperty("timestamp", timestamp);
     taskEntity.setProperty("email", userService.getCurrentUser().getEmail());
 
@@ -87,18 +87,18 @@ public class DataServlet extends HttpServlet {
 
   private final class Comment {
 
-    private final String comment;
+    private final String message;
     private final long timestamp;
     private final String email;
 
-    public Comment(String comment, long timestamp, String email) {
-      this.comment = comment;
+    public Comment(String message, long timestamp, String email) {
+      this.message = message;
       this.timestamp = timestamp;
       this.email = email;
     }
 
-    public String getComment() {
-      return comment;
+    public String getMessage() {
+      return message;
     }
 
     public String getEmail() {
