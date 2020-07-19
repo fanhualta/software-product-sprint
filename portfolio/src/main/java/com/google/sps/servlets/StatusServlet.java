@@ -31,79 +31,50 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
+@WebServlet("/status")
+public class StatusServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    response.setContentType("text/html");
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
+    UserService userService = UserServiceFactory.getUserService();
+    if (!userService.isUserLoggedIn()) {
+      String urlToRedirectToAfterUserLogsIn = "/";
+      String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
-    List<Comment> comments = new ArrayList<>();
-    for (Entity entity : results.asIterable()) {
-      String message = (String) entity.getProperty("message");
-      String email = (String) entity.getProperty("email");
-      long timestamp = (long) entity.getProperty("timestamp");
-      comments.add(new Comment(message, timestamp, email));
+      response.getWriter().println("<p>Hello stranger.</p>");
+      response.getWriter().println("<p>You need to <a href=\"" + loginUrl + "\">log in</a> first.</p>");
+      return;
     }
 
-    // Convert the server stats to JSON
-    String json = convertToJsonUsingGson(comments);
-    response.setContentType("application/json;");
-    response.getWriter().println(json);
+    String urlToRedirectToAfterUserLogsOut = "/";
+    String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
+
+    response.getWriter().println("<p>Hello " + userService.getCurrentUser().getEmail() + "!</p>");
+    response.getWriter().println("<p>Log out <a href=\"" + logoutUrl + "\">here</a>.</p>");
+    response.getWriter().println("<form action=\"/data\" method=\"POST\">");
+    response.getWriter().println("<input type=\"text\" name=\"message\">");
+    response.getWriter().println("<br/><br/>");
+    response.getWriter().println("<input type=\"submit\" />");
+    response.getWriter().println("</form>");
+
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String message = request.getParameter("message");
+    String comment = request.getParameter("comment");
     long timestamp = System.currentTimeMillis();
 
-    UserService userService = UserServiceFactory.getUserService();
     Entity taskEntity = new Entity("Comment");
-    taskEntity.setProperty("message", message);
+    taskEntity.setProperty("comment", comment);
     taskEntity.setProperty("timestamp", timestamp);
-    taskEntity.setProperty("email", userService.getCurrentUser().getEmail());
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(taskEntity);
 
     // Redirect back to the HTML page.
     response.sendRedirect("/index.html");
-  }
-
-  /**
-   * Converts a list of comments instance into a JSON string using the Gson library. Note: We first added
-   * the Gson library dependency to pom.xml.
-   */
-  private String convertToJsonUsingGson(List<Comment> comments) {
-    Gson gson = new Gson();
-    String json = gson.toJson(comments);
-    return json;
-  }
-
-
-  private final class Comment {
-
-    private final String message;
-    private final long timestamp;
-    private final String email;
-
-    public Comment(String message, long timestamp, String email) {
-      this.message = message;
-      this.timestamp = timestamp;
-      this.email = email;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-
-    public String getEmail() {
-      return email;
-    }
   }
 }
 

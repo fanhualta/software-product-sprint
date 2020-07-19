@@ -27,21 +27,27 @@ function getRandomQuote() {
 }
 
 function showComments() {
-  fetch('/data').then(response => response.json()).then((stats) => {
+  fetch('/data').then(response => response.json()).then((comments) => {
     // stats is an object, not a string, so we have to reference its fields to create HTML content
 
-    const statsListElement = document.getElementById('show-comments-container');
-    statsListElement.innerHTML = '';
+    const commentsListElement = document.getElementById('show-comments-container');
+    commentsListElement.innerHTML = '';
 
-    stats.forEach((comment) => {
-      statsListElement.appendChild(createListElement(comment));
+    comments.forEach((comment) => {
+      commentsListElement.appendChild(createListElement(comment));
     });
+  });
+}
+
+function checkLogStatus() {
+  fetch('/status').then(response => response.text()).then((status) => {
+    document.getElementById('log-status').innerHTML = status;
   });
 }
 
 /** Creates an <li> element containing text. */
 function createListElement(text) {
   const liElement = document.createElement('li');
-  liElement.innerText = text;
+  liElement.innerText = text.email + ': ' + text.comment;
   return liElement;
 }
